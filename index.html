@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sehat — Find a Doctor</title>
+<style>
+  :root{
+    --bg-0:#000000;
+    --bg-1:#0c0c10;
+    --bg-2:#141418;
+    --glass:rgba(255,255,255,0.06);
+    --glass-strong:rgba(255,255,255,0.10);
+    --glass-border:rgba(255,255,255,0.12);
+    --hairline:rgba(255,255,255,0.08);
+    --text-0:#F5F5F7;
+    --text-1:rgba(235,235,245,0.68);
+    --text-2:rgba(235,235,245,0.42);
+    --accent:#3AA0FF;
+    --accent-2:#39D2C0;
+    --danger:#FF6259;
+    --radius-lg:26px;
+    --radius-md:18px;
+    --radius-sm:12px;
+    font-size:16px;
+  }
+
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+
+  html,body{
+    margin:0;
+    height:100%;
+    background:#000;
+    font-family:-apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    color:var(--text-0);
+  }
+
+  body{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    min-height:100vh;
+    padding:40px 16px;
+    background:
+      radial-gradient(circle at 18% 8%, rgba(58,160,255,0.16), transparent 42%),
+      radial-gradient(circle at 82% 92%, rgba(57,210,192,0.14), transparent 45%),
+      linear-gradient(180deg,#050507 0%, #010102 100%);
+  }
+
+  /* ---------- Phone frame ---------- */
+  .device{
+    position:relative;
+    width:390px;
+    height:844px;
+    max-width:100%;
+    border-radius:56px;
+    padding:14px;
+    background:linear-gradient(155deg,#3a3a40,#101013 55%,#050506);
+    box-shadow:
+      0 40px 90px -20px rgba(0,0,0,0.75),
+      0 0 0 1px rgba(255,255,255,0.06) inset;
+  }
+
+  .screen{
+    position:relative;
+    width:100%;
+    height:100%;
+    border-radius:42px;
+    overflow:hidden;
+    background:
+      radial-gradient(circle at 15% 0%, rgba(58,160,255,0.20), transparent 40%),
+      radial-gradient(circle at 90% 15%, rgba(57,210,192,0.16), transparent 38%),
+      linear-gradient(195deg,#131318 0%, #0a0a0d 45%, #000 100%);
+    display:flex;
+    flex-direction:column;
+  }
+
+  .notch{
+    position:absolute;
+    top:12px; left:50%;
+    transform:translateX(-50%);
+    width:120px; height:32px;
+    background:#000;
+    border-radius:20px;
+    z-index:50;
+  }
+
+  /* ---------- Status bar ---------- */
+  .statusbar{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:16px 26px 4px;
+    font-size:15px;
+    font-weight:600;
+    letter-spacing:0.2px;
+    color:var(--text-0);
+    flex-shrink:0;
+  }
+  .statusbar .icons{display:flex; align-items:center; gap:6px;}
+
+  /* ---------- Scroll area ---------- */
+  .content{
+    flex:1;
+    overflow-y:auto;
+    padding:6px 20px 110px;
+    scrollbar-width:none;
+  }
+  .content::-webkit-scrollbar{display:none;}
+
+  /* ---------- Header ---------- */
+  .header{
+    display:flex;
+    align-items:flex-start;
+    justify-content:space-between;
+    padding:10px 2px 18px;
+  }
+  .greeting-label{
+    font-size:13px;
+    color:var(--text-2);
+    margin:0 0 4px;
+    font-weight:500;
+  }
+  .greeting-title{
+    font-size:26px;
+    font-weight:700;
+    margin:0;
+    letter-spacing:-0.4px;
+  }
+  .avatar-btn{
+    width:44px; height:44px;
+    border-radius:50%;
+    background:linear-gradient(145deg,var(--accent),var(--accent-2));
+    display:flex;align-items:center;justify-content:center;
+    font-weight:700;
+    font-size:15px;
+    color:#04121a;
+    flex-shrink:0;
+    box-shadow:0 6px 16px -4px rgba(58,160,255,0.5);
+  }
+
+  /* ---------- Glass search ---------- */
+  .search{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    padding:13px 16px;
+    border-radius:var(--radius-md);
+    background:var(--glass);
+    border:1px solid var(--glass-border);
+    backdrop-filter:blur(20px) saturate(160%);
+    -webkit-backdrop-filter:blur(20px) saturate(160%);
+    margin-bottom:20px;
+  }
+  .search input{
+    border:none; outline:none; background:transparent;
+    color:var(--text-0); font-size:15px; width:100%;
+    font-family:inherit;
+  }
+  .search input::placeholder{color:var(--text-2);}
+  .search svg{flex-shrink:0;}
+
+  /* ---------- Section heading ---------- */
+  .section-row{
+    display:flex; align-items:baseline; justify-content:space-between;
+    margin:22px 2px 12px;
+  }
+  .section-title{font-size:18px; font-weight:700; margin:0; letter-spacing:-0.2px;}
+  .section-link{font-size:13px; color:var(--accent); font-weight:600;}
+
+  /* ---------- Category chips ---------- */
+  .chip-row{
+    display:flex; gap:10px; overflow-x:auto; padding:2px 2px 4px; scrollbar-width:none;
+  }
+  .chip-row::-webkit-scrollbar{display:none;}
+  .chip{
+    flex-shrink:0;
+    display:flex; align-items:center; gap:8px;
+    padding:9px 16px;
+    border-radius:999px;
+    background:var(--glass);
+    border:1px solid var(--glass-border);
+    backdrop-filter:blur(18px);
+    -webkit-backdrop-filter:blur(18px);
+    font-size:13.5px; font-weight:600; color:var(--text-1);
+    white-space:nowrap;
+  }
+  .chip.active{
+    background:linear-gradient(135deg, rgba(58,160,255,0.9), rgba(57,210,192,0.85));
+    color:#04121a;
+    border-color:transparent;
+  }
+  .chip svg{width:15px;height:15px;}
+
+  /* ---------- Availability glass banner ---------- */
+  .banner{
+    position:relative;
+    margin-top:20px;
+    padding:20px;
+    border-radius:var(--radius-lg);
+    overflow:hidden;
+    background:linear-gradient(135deg, rgba(58,160,255,0.35), rgba(57,210,192,0.22));
+    border:1px solid rgba(255,255,255,0.16);
+    backdrop-filter:blur(24px) saturate(180%);
+    -webkit-backdrop-filter:blur(24px) saturate(180%);
+  }
+  .banner-eyebrow{font-size:12.5px; color:rgba(245,245,247,0.85); font-weight:600; margin:0 0 6px;}
+  .banner-title{font-size:19px; font-weight:700; margin:0 0 14px; max-width:220px; line-height:1.25;}
+  .banner-btn{
+    display:inline-flex; align-items:center; gap:6px;
+    background:rgba(0,0,0,0.35);
+    border:1px solid rgba(255,255,255,0.18);
+    color:#fff; font-size:13px; font-weight:600;
+    padding:9px 14px; border-radius:999px;
+  }
+  .banner-icon{
+    position:absolute; right:14px; top:14px;
+    width:54px;height:54px; border-radius:16px;
+    background:rgba(255,255,255,0.16);
+    display:flex;align-items:center;justify-content:center;
+  }
+
+  /* ---------- Doctor cards ---------- */
+  .doctor-card{
+    display:flex; align-items:center; gap:14px;
+    padding:14px;
+    border-radius:var(--radius-md);
+    background:var(--glass);
+    border:1px solid var(--glass-border);
+    backdrop-filter:blur(18px) saturate(160%);
+    -webkit-backdrop-filter:blur(18px) saturate(160%);
+    margin-bottom:12px;
+  }
+  .doctor-photo{
+    width:56px;height:56px;border-radius:16px;
+    flex-shrink:0;
+    display:flex;align-items:center;justify-content:center;
+    color:#fff;
+  }
+  .doctor-info{flex:1; min-width:0;}
+  .doctor-name{font-size:15px; font-weight:700; margin:0 0 2px; letter-spacing:-0.1px;}
+  .doctor-role{font-size:12.5px; color:var(--text-1); margin:0 0 6px;}
+  .doctor-meta{display:flex; align-items:center; gap:10px; font-size:12px; color:var(--text-2);}
+  .doctor-meta .rating{display:flex;align-items:center;gap:4px;color:#FFC94A;font-weight:600;}
+  .doctor-meta .dot{width:3px;height:3px;border-radius:50%;background:var(--text-2);}
+  .book-btn{
+    flex-shrink:0;
+    width:38px;height:38px;border-radius:12px;
+    background:var(--glass-strong);
+    border:1px solid var(--glass-border);
+    display:flex;align-items:center;justify-content:center;
+    color:var(--accent-2);
+  }
+
+  /* ---------- Bottom tab bar ---------- */
+  .tabbar{
+    position:absolute;
+    left:14px; right:14px; bottom:16px;
+    display:flex; justify-content:space-between; align-items:center;
+    padding:12px 18px;
+    border-radius:26px;
+    background:rgba(20,20,24,0.55);
+    border:1px solid var(--glass-border);
+    backdrop-filter:blur(28px) saturate(180%);
+    -webkit-backdrop-filter:blur(28px) saturate(180%);
+    box-shadow:0 12px 34px -12px rgba(0,0,0,0.6);
+    z-index:40;
+  }
+  .tab{
+    display:flex; flex-direction:column; align-items:center; gap:4px;
+    color:var(--text-2);
+    width:44px;
+  }
+  .tab.active{color:var(--text-0);}
+  .tab-dot{width:4px;height:4px;border-radius:50%;background:transparent;}
+  .tab.active .tab-dot{background:var(--accent-2);}
+  .tab span{font-size:10.5px; font-weight:600;}
+
+  .home-indicator{
+    position:absolute; bottom:8px; left:50%; transform:translateX(-50%);
+    width:134px; height:5px; border-radius:3px;
+    background:rgba(255,255,255,0.55);
+    z-index:41;
+  }
+
+  @media (max-width:430px){
+    .device{width:100%; height:100dvh; border-radius:0; padding:0;}
+    .screen{border-radius:0;}
+    body{padding:0;}
+  }
+</style>
+</head>
+<body>
+
+<div class="device">
+  <div class="screen">
+    <div class="notch"></div>
+
+    <div class="statusbar">
+      <span>9:41</span>
+      <div class="icons">
+        <!-- signal -->
+        <svg width="18" height="12" viewBox="0 0 18 12" fill="none"><rect x="0" y="7" width="3" height="5" rx="0.8" fill="#F5F5F7"/><rect x="5" y="5" width="3" height="7" rx="0.8" fill="#F5F5F7"/><rect x="10" y="3" width="3" height="9" rx="0.8" fill="#F5F5F7"/><rect x="15" y="0" width="3" height="12" rx="0.8" fill="#F5F5F7"/></svg>
+        <!-- wifi -->
+        <svg width="16" height="12" viewBox="0 0 16 12" fill="none"><path d="M8 10.4a1.2 1.2 0 1 0 0-2.4 1.2 1.2 0 0 0 0 2.4Z" fill="#F5F5F7"/><path d="M4.2 6.6a5.4 5.4 0 0 1 7.6 0" stroke="#F5F5F7" stroke-width="1.4" stroke-linecap="round"/><path d="M1.6 3.9a9.2 9.2 0 0 1 12.8 0" stroke="#F5F5F7" stroke-width="1.4" stroke-linecap="round"/></svg>
+        <!-- battery -->
+        <svg width="25" height="12" viewBox="0 0 25 12" fill="none"><rect x="0.75" y="0.75" width="20.5" height="10.5" rx="2.75" stroke="#F5F5F7" stroke-opacity="0.5" stroke-width="1"/><rect x="2.2" y="2.2" width="17.6" height="7.6" rx="1.6" fill="#F5F5F7"/><path d="M22.5 4.2v3.6c.86-.32 1.4-1.06 1.4-1.8s-.54-1.48-1.4-1.8Z" fill="#F5F5F7" fill-opacity="0.5"/></svg>
+      </div>
+    </div>
+
+    <div class="content">
+
+      <div class="header">
+        <div>
+          <p class="greeting-label">Good evening</p>
+          <h1 class="greeting-title">Find your doctor</h1>
+        </div>
+        <div class="avatar-btn">RH</div>
+      </div>
+
+      <div class="search">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(235,235,245,0.5)" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+        <input type="text" placeholder="Search doctors, clinics, symptoms">
+      </div>
+
+      <div class="chip-row">
+        <div class="chip active">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 1 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8Z"/></svg>
+          All
+        </div>
+        <div class="chip">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-4.6-9.5-9.1C.8 8.4 2.3 5 5.7 5c2 0 3.4 1.1 4.3 2.4C10.9 6.1 12.3 5 14.3 5c3.4 0 4.9 3.4 3.2 6.9C19 16.4 12 21 12 21Z"/></svg>
+          Cardiology
+        </div>
+        <div class="chip">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg>
+          General
+        </div>
+        <div class="chip">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3h6l1 5-4 3 4 3-1 7H9l-1-7 4-3-4-3 1-5Z"/></svg>
+          Dental
+        </div>
+        <div class="chip">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4.5 5-6 8-6s6.5 1.5 8 6"/></svg>
+          Pediatric
+        </div>
+      </div>
+
+      <div class="banner">
+        <div class="banner-icon">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="7" width="14" height="12" rx="2"/><path d="M17 10l4-2v9l-4-2"/></svg>
+        </div>
+        <p class="banner-eyebrow">Available now</p>
+        <p class="banner-title">Talk to a doctor online in under 3 minutes</p>
+        <div class="banner-btn">
+          Start video call
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </div>
+      </div>
+
+      <div class="section-row">
+        <h2 class="section-title">Nearby doctors</h2>
+        <span class="section-link">See all</span>
+      </div>
+
+      <div class="doctor-card">
+        <div class="doctor-photo" style="background:linear-gradient(150deg,#3AA0FF,#1D5FA8);">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4v4a6 6 0 0 0 12 0V4"/><path d="M6 4H4M18 4h2"/><path d="M12 14v3a4 4 0 0 0 4 4h1"/><circle cx="19" cy="19" r="2"/></svg>
+        </div>
+        <div class="doctor-info">
+          <p class="doctor-name">Dr. Ayesha Malik</p>
+          <p class="doctor-role">Cardiologist · City Heart Clinic</p>
+          <div class="doctor-meta">
+            <span class="rating">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="#FFC94A"><path d="M12 2l3.1 6.6 7.2.9-5.3 5 1.4 7.2-6.4-3.6-6.4 3.6 1.4-7.2-5.3-5 7.2-.9L12 2Z"/></svg>
+              4.9
+            </span>
+            <span class="dot"></span>
+            <span>1.2 km away</span>
+          </div>
+        </div>
+        <div class="book-btn">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </div>
+      </div>
+
+      <div class="doctor-card">
+        <div class="doctor-photo" style="background:linear-gradient(150deg,#39D2C0,#1D8578);">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4.5 5-6 8-6s6.5 1.5 8 6"/></svg>
+        </div>
+        <div class="doctor-info">
+          <p class="doctor-name">Dr. Bilal Ahmed</p>
+          <p class="doctor-role">Pediatrician · Sehat Kids Care</p>
+          <div class="doctor-meta">
+            <span class="rating">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="#FFC94A"><path d="M12 2l3.1 6.6 7.2.9-5.3 5 1.4 7.2-6.4-3.6-6.4 3.6 1.4-7.2-5.3-5 7.2-.9L12 2Z"/></svg>
+              4.8
+            </span>
+            <span class="dot"></span>
+            <span>Online now</span>
+          </div>
+        </div>
+        <div class="book-btn">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </div>
+      </div>
+
+      <div class="doctor-card">
+        <div class="doctor-photo" style="background:linear-gradient(150deg,#B98CFF,#6A3FB0);">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3h6l1 5-4 3 4 3-1 7H9l-1-7 4-3-4-3 1-5Z"/></svg>
+        </div>
+        <div class="doctor-info">
+          <p class="doctor-name">Dr. Sara Khan</p>
+          <p class="doctor-role">Dental Surgeon · Bright Smile</p>
+          <div class="doctor-meta">
+            <span class="rating">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="#FFC94A"><path d="M12 2l3.1 6.6 7.2.9-5.3 5 1.4 7.2-6.4-3.6-6.4 3.6 1.4-7.2-5.3-5 7.2-.9L12 2Z"/></svg>
+              4.7
+            </span>
+            <span class="dot"></span>
+            <span>2.4 km away</span>
+          </div>
+        </div>
+        <div class="book-btn">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="tabbar">
+      <div class="tab active">
+        <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg>
+        <span>Home</span>
+        <div class="tab-dot"></div>
+      </div>
+      <div class="tab">
+        <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+        <span>Search</span>
+        <div class="tab-dot"></div>
+      </div>
+      <div class="tab">
+        <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>
+        <span>Bookings</span>
+        <div class="tab-dot"></div>
+      </div>
+      <div class="tab">
+        <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4.5 5-6 8-6s6.5 1.5 8 6"/></svg>
+        <span>Profile</span>
+        <div class="tab-dot"></div>
+      </div>
+    </div>
+
+    <div class="home-indicator"></div>
+  </div>
+</div>
+
+</body>
+</html>
