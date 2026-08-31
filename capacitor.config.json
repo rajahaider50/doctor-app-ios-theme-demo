@@ -1,0 +1,7 @@
+{
+  "appId": "com.rajahaider.sehatdoctorapp",
+  "appName": "Sehat Doctor App",
+  "webDir": "www",
+  "bundledWebRuntime": false,
+  "backgroundColor": "#050507"
+}

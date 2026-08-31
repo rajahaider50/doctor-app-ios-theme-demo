@@ -1,0 +1,14 @@
+{
+  "name": "doctor-app-ios-theme-demo",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Sehat doctor app - installable PWA + Android APK build via Capacitor",
+  "scripts": {},
+  "dependencies": {
+    "@capacitor/android": "^6.1.2",
+    "@capacitor/core": "^6.1.2"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^6.1.2"
+  }
+}
